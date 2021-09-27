@@ -1,6 +1,6 @@
 {
   "name": "param-store-service",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Service to read parameters from AWS param store.",
   "main": "dist/index.js",
   "scripts": {
@@ -22,10 +22,13 @@
     "*.md"
   ],
   "keywords": [
-    "nestjs",
-    "aws",
-    "ssm",
-    "param-store",
+    "NestJS",
+    "Nest",
+    "AWS",
+    "System Manager",
+    "SSM",
+    "Parameter Store",
+    "param store",
     "config service"
   ],
   "publishConfig": {
