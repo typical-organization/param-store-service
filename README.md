@@ -2,12 +2,8 @@
 
 ### Installation
 
-1. Clone the repo
-2. Run npm/yarn install
-
 ```bash
-cd param-store-service
-npm install
+npm i param-store-service
 ```
 
 ### Configuration
