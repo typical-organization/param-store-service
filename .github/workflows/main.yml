@@ -13,6 +13,7 @@ jobs:
           node-version: '14'
           registry-url: 'https://registry.npmjs.org'
           cache: 'npm'
+      - run: npm cache clean --force
       - run: npm ci
       - run: npm install
       - run: npm publish
