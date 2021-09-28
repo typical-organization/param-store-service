@@ -1,5 +1,22 @@
 <h3 align="center">NestJS AWS SSM Param Store service</h3>
 
+Package to read parameters from AWS System Manager (SSM) parameter store. 
+We can use "@nestjs/config" config service to read parameters from file and environment variables.
+And use paramStoreService to read environment specific parameters like password or endpoint URL on application start up.
+
+Module exports 'ParamStoreService' to access downloaded parameters. 
+Service has method 'get' to read property.
+
+Example:
+
+```javascript
+paramStoreService.get('nameOfProperty');
+```
+
+**Note**: 
+1. If region (awsRegion) is not provided it defaults to 'us-east-1'.
+2. awsParamSorePath is required.
+
 ### Installation
 
 ```bash
