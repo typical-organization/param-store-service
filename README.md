@@ -1,6 +1,6 @@
 <h3 align="center">NestJS AWS SSM Param Store service</h3>
 <br>
-[![Node.js Package](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml/badge.svg)](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml)
+[![NPM](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml/badge.svg)](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml)
 <br>
 
 Package to read parameters from AWS System Manager (SSM) parameter store. 
