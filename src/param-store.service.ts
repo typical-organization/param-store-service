@@ -15,7 +15,6 @@ export class ParamStoreService {
         parameterPathTokens[parameterPathTokens.length - 1]
       ] = parameter.Value;
     });
-    console.log('this._environmentParams', this._paramStoreParameters);
   }
 
   get(key: string): string {
