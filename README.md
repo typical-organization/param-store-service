@@ -143,7 +143,7 @@ Contributions welcome!
 
 ## Author
 
-**Parik**
+**PM**
 
 ## License
 
