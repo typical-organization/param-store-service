@@ -70,6 +70,7 @@ export class ParamStoreModule {
             .getParametersByPath({
               Path: configService.get(AWS_PARAM_STORE_PATH),
               Recursive: true,
+              WithDecryption: true,
             })
             .promise();
           return result?.Parameters;
