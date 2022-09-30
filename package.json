@@ -1,7 +1,7 @@
 {
   "name": "param-store-service",
   "version": "1.0.11",
-  "description": "Service to read parameters from AWS param store.",
+  "description": "Service to read parameters from AWS Param Store.",
   "main": "dist/index.js",
   "scripts": {
     "start:dev": "tsc -w",
