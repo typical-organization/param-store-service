@@ -39,16 +39,10 @@ export class ParamStoreModule {
       {
         provide: AWS_PARAM_STORE_PROVIDER,
         useFactory: async (): Promise<Parameter[]> => {
-          const ssmClient = new SSM({
-            region: moduleOptions.awsRegion,
-          });
-          const result = await ssmClient
-            .getParametersByPath({
-              Path: moduleOptions.awsParamSorePath,
-              Recursive: true,
-            })
-            .promise();
-          return result?.Parameters;
+          return await ParamStoreModule.getSSMParameters(
+            moduleOptions.awsRegion,
+            moduleOptions.awsParamSorePath,
+          );
         },
       },
     ];
@@ -63,20 +57,47 @@ export class ParamStoreModule {
         useFactory: async (
           configService: ConfigService,
         ): Promise<Parameter[]> => {
-          const ssmClient = new SSM({
-            region: configService.get(AWS_REGION),
-          });
-          const result = await ssmClient
-            .getParametersByPath({
-              Path: configService.get(AWS_PARAM_STORE_PATH),
-              Recursive: true,
-              WithDecryption: true,
-            })
-            .promise();
-          return result?.Parameters;
+          return await ParamStoreModule.getSSMParameters(
+            configService.get(AWS_REGION),
+            configService.get(AWS_PARAM_STORE_PATH),
+          );
         },
         inject: [moduleAsyncOptions.useClass],
       },
     ];
+  }
+
+  private static async getSSMParameters(
+    awsRegion: string,
+    awsParamSorePath: string,
+  ): Promise<Parameter[]> {
+    const parameters = [];
+    let nextToken = null;
+    let result = null;
+
+    const ssmClient = new SSM({
+      region: awsRegion,
+    });
+    result = await ssmClient
+      .getParametersByPath({
+        Path: awsParamSorePath,
+        Recursive: true,
+        WithDecryption: true,
+      })
+      .promise();
+    parameters.push(...result?.Parameters);
+    nextToken = result.NextToken;
+    while (!!nextToken) {
+      result = await ssmClient
+        .getParametersByPath({
+          NextToken: nextToken,
+          Path: awsParamSorePath,
+          Recursive: true,
+        })
+        .promise();
+      parameters.push(...result?.Parameters);
+      nextToken = result.NextToken;
+    }
+    return parameters;
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "param-store-service",
-  "version": "1.0.11",
+  "version": "1.0.12",
   "description": "Service to read parameters from AWS Param Store.",
   "main": "dist/index.js",
   "scripts": {
