@@ -93,6 +93,7 @@ export class ParamStoreModule {
           NextToken: nextToken,
           Path: awsParamSorePath,
           Recursive: true,
+          WithDecryption: true,
         })
         .promise();
       parameters.push(...result?.Parameters);
