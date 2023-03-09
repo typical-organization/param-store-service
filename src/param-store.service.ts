@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Parameter } from 'aws-sdk/clients/ssm';
 import { AWS_PARAM_STORE_PROVIDER } from './constants';
 import { ParamStoreParameters } from './interface';
+import { Parameter } from '@aws-sdk/client-ssm';
 
 @Injectable()
 export class ParamStoreService {

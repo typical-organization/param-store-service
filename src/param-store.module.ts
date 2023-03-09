@@ -1,7 +1,5 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SSM } from 'aws-sdk';
-import { Parameter } from 'aws-sdk/clients/ssm';
 import {
   AWS_PARAM_STORE_PATH,
   AWS_PARAM_STORE_PROVIDER,
@@ -9,6 +7,11 @@ import {
 } from './constants';
 import { ModuleAsyncOptions, ModuleOptions } from './interface';
 import { ParamStoreService } from './param-store.service';
+import {
+  GetParametersByPathCommand,
+  Parameter,
+  SSMClient,
+} from '@aws-sdk/client-ssm';
 
 @Global()
 @Module({})
@@ -74,30 +77,25 @@ export class ParamStoreModule {
     const parameters = [];
     let nextToken = null;
     let result = null;
-
-    const ssmClient = new SSM({
-      region: awsRegion,
-    });
-    result = await ssmClient
-      .getParametersByPath({
+    let areMoreParametersToFetch = true;
+    const clientConfiguration = { region: awsRegion };
+    const ssmClient = new SSMClient(clientConfiguration);
+    while (areMoreParametersToFetch) {
+      const commandInput = {
         Path: awsParamSorePath,
         Recursive: true,
         WithDecryption: true,
-      })
-      .promise();
-    parameters.push(...result?.Parameters);
-    nextToken = result.NextToken;
-    while (!!nextToken) {
-      result = await ssmClient
-        .getParametersByPath({
-          NextToken: nextToken,
-          Path: awsParamSorePath,
-          Recursive: true,
-          WithDecryption: true,
-        })
-        .promise();
+      };
+      if (!!nextToken) {
+        commandInput['NextToken'] = nextToken;
+      }
+      const getParametersByPathCommand = new GetParametersByPathCommand(
+        commandInput,
+      );
+      result = await ssmClient.send(getParametersByPathCommand);
       parameters.push(...result?.Parameters);
       nextToken = result.NextToken;
+      areMoreParametersToFetch = !!nextToken;
     }
     return parameters;
   }
