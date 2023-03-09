@@ -1,6 +1,6 @@
 {
   "name": "param-store-service",
-  "version": "1.1.0",
+  "version": "2.0.0",
   "description": "Service to read parameters from AWS Param Store.",
   "main": "dist/index.js",
   "scripts": {
@@ -42,7 +42,7 @@
   "peerDependencies": {
     "@nestjs/common": "^9.3.9",
     "@nestjs/config": "^2.3.1",
-    "aws-sdk": "^2.1317.0"
+    "@aws-sdk/client-ssm": "^3.287.0"
   },
   "devDependencies": {
     "@nestjs/common": "^9.3.9",

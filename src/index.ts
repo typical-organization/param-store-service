@@ -1,4 +1,17 @@
-export * from './param-store.service';
-export * from './param-store.module';
-export * from './interface';
-export { AWS_PARAM_STORE_PROVIDER } from './constants';
+import { ParamStoreService } from './param-store.service';
+import { ParamStoreModule } from './param-store.module';
+import {
+  ModuleAsyncOptions,
+  ModuleOptions,
+  ParamStoreParameters,
+} from './interface';
+import { AWS_PARAM_STORE_PROVIDER } from './constants';
+
+export {
+  AWS_PARAM_STORE_PROVIDER,
+  ParamStoreService,
+  ParamStoreModule,
+  ParamStoreParameters,
+  ModuleOptions,
+  ModuleAsyncOptions,
+};
