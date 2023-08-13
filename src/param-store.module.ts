@@ -1,6 +1,7 @@
 import { DynamicModule, Global, Module, Provider } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
+  AWS_PARAM_STORE_CONTINUE_ON_ERROR,
   AWS_PARAM_STORE_PATH,
   AWS_PARAM_STORE_PROVIDER,
   AWS_REGION,
@@ -45,6 +46,9 @@ export class ParamStoreModule {
           return await ParamStoreModule.getSSMParameters(
             moduleOptions.awsRegion,
             moduleOptions.awsParamSorePath,
+            moduleOptions.awsParamStoreContinueOnError
+              ? moduleOptions.awsParamStoreContinueOnError
+              : false,
           );
         },
       },
@@ -63,6 +67,9 @@ export class ParamStoreModule {
           return await ParamStoreModule.getSSMParameters(
             configService.get(AWS_REGION),
             configService.get(AWS_PARAM_STORE_PATH),
+            configService.get(AWS_PARAM_STORE_CONTINUE_ON_ERROR)
+              ? configService.get(AWS_PARAM_STORE_CONTINUE_ON_ERROR)
+              : false,
           );
         },
         inject: [moduleAsyncOptions.useClass],
@@ -73,29 +80,38 @@ export class ParamStoreModule {
   private static async getSSMParameters(
     awsRegion: string,
     awsParamSorePath: string,
+    continueOnError: boolean,
   ): Promise<Parameter[]> {
     const parameters = [];
-    let nextToken = null;
-    let result = null;
-    let areMoreParametersToFetch = true;
-    const clientConfiguration = { region: awsRegion };
-    const ssmClient = new SSMClient(clientConfiguration);
-    while (areMoreParametersToFetch) {
-      const commandInput = {
-        Path: awsParamSorePath,
-        Recursive: true,
-        WithDecryption: true,
-      };
-      if (!!nextToken) {
-        commandInput['NextToken'] = nextToken;
+    try {
+      let nextToken = null;
+      let result = null;
+      let areMoreParametersToFetch = true;
+      const clientConfiguration = { region: awsRegion };
+      const ssmClient = new SSMClient(clientConfiguration);
+      while (areMoreParametersToFetch) {
+        const commandInput = {
+          Path: awsParamSorePath,
+          Recursive: true,
+          WithDecryption: true,
+        };
+        if (!!nextToken) {
+          commandInput['NextToken'] = nextToken;
+        }
+        const getParametersByPathCommand = new GetParametersByPathCommand(
+          commandInput,
+        );
+        result = await ssmClient.send(getParametersByPathCommand);
+        parameters.push(...result?.Parameters);
+        nextToken = result.NextToken;
+        areMoreParametersToFetch = !!nextToken;
       }
-      const getParametersByPathCommand = new GetParametersByPathCommand(
-        commandInput,
-      );
-      result = await ssmClient.send(getParametersByPathCommand);
-      parameters.push(...result?.Parameters);
-      nextToken = result.NextToken;
-      areMoreParametersToFetch = !!nextToken;
+    } catch (error) {
+      if (continueOnError) {
+        console.log('Error while fetching AWS parameters: ', error.message);
+      } else {
+        throw error;
+      }
     }
     return parameters;
   }
