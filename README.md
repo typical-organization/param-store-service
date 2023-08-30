@@ -31,7 +31,7 @@ npm i param-store-service
 Two ways to configure param-store-service module:
 
 1. Static configuration
-    ```javascript
+    ```
     @Module({
         imports: [
             ParamStoreModule.register({
@@ -59,7 +59,7 @@ Two ways to configure param-store-service module:
         1. param-store.awsParamStoreContinueOnError - Default value is false. If set true, server will not stop if there
            is an error fetching properties from AWS parameter store
 
-```javascript
+```
 @Module({
     imports: [
         ConfigModule.forRoot({
@@ -78,27 +78,10 @@ Two ways to configure param-store-service module:
 })
 export class AppModule {
     constructor(
-        private
-
-    paramStoreService: ParamStoreService
-,
-) {
-    console
-.
-
-    log(
-
-    'name'
-,
-    paramStoreService
-.
-
-    get(
-
-    'name'
-))
-    ;
-}
+        private paramStoreService: ParamStoreService,
+    ) {
+        console.log('name', paramStoreService.get('name'));
+    }
 }
 ```
 
