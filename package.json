@@ -1,6 +1,6 @@
 {
   "name": "param-store-service",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Service to read parameters from AWS Param Store.",
   "main": "dist/index.js",
   "scripts": {
@@ -40,21 +40,21 @@
   },
   "bugs": "https://github.com/typical-organization/param-store-service",
   "peerDependencies": {
-    "@aws-sdk/client-ssm": "^3.287.0",
-    "@nestjs/common": "^9.3.9",
-    "@nestjs/config": "^3.0.0"
+    "@aws-sdk/client-ssm": "^3.405.0",
+    "@nestjs/common": "^10.2.4",
+    "@nestjs/config": "^3.0.1"
   },
   "devDependencies": {
-    "@nestjs/common": "^10.2.2",
-    "@nestjs/core": "^10.2.2",
-    "@nestjs/platform-express": "^10.2.2",
-    "@nestjs/testing": "^10.2.2",
+    "@nestjs/common": "^10.2.4",
+    "@nestjs/core": "^10.2.4",
+    "@nestjs/platform-express": "^10.2.4",
+    "@nestjs/testing": "^10.2.4",
     "@types/express": "4.17.17",
     "@types/jest": "29.5.4",
-    "@types/node": "20.5.7",
+    "@types/node": "20.5.9",
     "@types/supertest": "2.0.12",
-    "@typescript-eslint/eslint-plugin": "^6.5.0",
-    "@typescript-eslint/parser": "^6.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
     "eslint": "^8.33.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
