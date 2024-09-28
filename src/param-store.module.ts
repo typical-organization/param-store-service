@@ -95,14 +95,14 @@ export class ParamStoreModule {
           Recursive: true,
           WithDecryption: true,
         };
-        if (!!nextToken) {
+        if (nextToken) {
           commandInput['NextToken'] = nextToken;
         }
         const getParametersByPathCommand = new GetParametersByPathCommand(
           commandInput,
         );
         result = await ssmClient.send(getParametersByPathCommand);
-        parameters.push(...result?.Parameters);
+        parameters.push(...(result ? result.Parameters : undefined));
         nextToken = result.NextToken;
         areMoreParametersToFetch = !!nextToken;
       }
