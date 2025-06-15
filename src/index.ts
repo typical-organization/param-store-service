@@ -1,5 +1,5 @@
-import { ParamStoreService } from './param-store.service';
-import { ParamStoreModule } from './param-store.module';
+import { ParamStoreService } from './service';
+import { ParamStoreModule } from './module';
 import {
   ModuleAsyncOptions,
   ModuleOptions,

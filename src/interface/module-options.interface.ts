@@ -1,5 +1,5 @@
 export interface ModuleOptions {
   awsRegion: string;
-  awsParamSorePath: string;
+  awsParamStorePath: string;
   awsParamStoreContinueOnError: boolean;
 }
