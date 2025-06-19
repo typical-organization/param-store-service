@@ -40,9 +40,7 @@ describe('ParamStoreService', () => {
     });
 
     it('throws if key missing and no default', () => {
-      expect(() => service.get('nope')).toThrowError(
-        `Parameter "nope" not found`,
-      );
+      expect(() => service.get('nope')).toThrow(`Parameter "nope" not found`);
     });
   });
 
@@ -56,7 +54,7 @@ describe('ParamStoreService', () => {
     });
 
     it('throws if value is not a number', () => {
-      expect(() => service.getAsNumber('foo')).toThrowError(
+      expect(() => service.getAsNumber('foo')).toThrow(
         `Parameter value "foo" is not a number`,
       );
     });
@@ -78,7 +76,7 @@ describe('ParamStoreService', () => {
     });
 
     it('throws if not a boolean string', () => {
-      expect(() => service.getBoolean('bar')).toThrowError(
+      expect(() => service.getBoolean('bar')).toThrow(
         `Parameter value "bar" is not a boolean`,
       );
     });
@@ -95,7 +93,7 @@ describe('ParamStoreService', () => {
         [{ Name: '/app/bad', Value: 'not json' }],
         baseOptions,
       );
-      expect(() => badSvc.getJson('bad')).toThrowError(
+      expect(() => badSvc.getJson('bad')).toThrow(
         `Parameter value "bad" contains invalid JSON`,
       );
     });
@@ -141,7 +139,7 @@ describe('ParamStoreService', () => {
         throw new Error('SSM failure');
       });
 
-      await expect(service.refresh()).rejects.toThrowError('SSM failure');
+      await expect(service.refresh()).rejects.toThrow('SSM failure');
     });
 
     it('swallows error when continueOnError is true', async () => {

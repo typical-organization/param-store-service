@@ -17,6 +17,7 @@ export class ParamStoreService {
   private readonly ssmClient: SSMClient;
   private readonly path: string;
   private readonly continueOnError: boolean;
+  private isRefreshing: boolean;
 
   constructor(
     @Inject(AWS_PARAM_STORE_PROVIDER) awsParameters: Parameter[],
@@ -26,12 +27,7 @@ export class ParamStoreService {
     this.ssmClient = new SSMClient({ region: options.awsRegion });
     this.path = options.awsParamStorePath;
     this.continueOnError = options.awsParamStoreContinueOnError ?? false;
-    awsParameters.forEach((parameter) => {
-      const parameterPathTokens = parameter.Name.split('/');
-      this.paramStoreParameters[
-        parameterPathTokens[parameterPathTokens.length - 1]
-      ] = parameter.Value;
-    });
+    this.isRefreshing = false;
     this.loadParameters(awsParameters);
   }
 
@@ -95,21 +91,22 @@ export class ParamStoreService {
   }
 
   public async refresh(): Promise<void> {
+    if (this.isRefreshing) {
+      ParamStoreService.LOGGER.warn('Refresh already in progress, skipping.');
+      return;
+    }
+    this.isRefreshing = true;
     try {
-      // const parameters = await fetchAllSSMParameters(this.ssmClient, this.path);
-
       const parameters: Parameter[] = [];
       const paginator = paginateGetParametersByPath(
         { client: this.ssmClient },
         { Path: this.path, Recursive: true, WithDecryption: true },
       );
-
       for await (const page of paginator) {
         if (page.Parameters) {
           parameters.push(...page.Parameters);
         }
       }
-
       this.loadParameters(parameters);
     } catch (error) {
       if (this.continueOnError) {
@@ -120,6 +117,8 @@ export class ParamStoreService {
       } else {
         throw error;
       }
+    } finally {
+      this.isRefreshing = false;
     }
   }
 

@@ -5,11 +5,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ParamStoreModule } from './param-store.module';
 import { ParamStoreService } from '../service';
 import {
-  AWS_PARAM_STORE_CONTINUE_ON_ERROR,
   AWS_PARAM_STORE_OPTIONS,
-  AWS_PARAM_STORE_PATH,
   AWS_PARAM_STORE_PROVIDER,
-  AWS_REGION,
 } from '../constants';
 import { ModuleAsyncOptions, ModuleOptions } from '../interface';
 
@@ -77,40 +74,41 @@ describe('ParamStoreModule', () => {
       moduleDef = ParamStoreModule.forRootAsync(asyncOpts);
     });
 
-    it('should set the module to ParamStoreModule and have no imports', () => {
+    it('should set the module to ParamStoreModule and include ConfigModule & ScheduleModule imports', () => {
       expect(moduleDef.module).toBe(ParamStoreModule);
-      expect(moduleDef.imports).toBeUndefined();
+
+      // now two imports: the user’s ConfigModule plus ScheduleModule.forRoot()
+      expect(moduleDef.imports).toHaveLength(2);
+      expect(moduleDef.imports).toContain(ConfigModule);
+
+      const schedMod = moduleDef.imports![1] as DynamicModule;
+      expect(schedMod.module).toBe(ScheduleModule);
     });
 
     it('should register ParamStoreService as a provider', () => {
       expect(moduleDef.providers![0]).toBe(ParamStoreService);
     });
 
-    it('should provide AWS_PARAM_STORE_PROVIDER that injects ConfigService and calls getSSMParameters', async () => {
+    it('should provide AWS_PARAM_STORE_PROVIDER that injects AWS_PARAM_STORE_OPTIONS and calls getSSMParameters', async () => {
       const spy = jest
         .spyOn(ParamStoreModule as any, 'getSSMParameters')
         .mockResolvedValue([{ Name: '/foo', Value: 'bar' }]);
+
       const prov = (moduleDef.providers as any[]).find(
         (p) => p.provide === AWS_PARAM_STORE_PROVIDER,
       );
       expect(prov).toBeDefined();
-      expect(prov.inject).toEqual([ConfigService]);
 
-      // create a fake ConfigService
-      const fakeConfigService = {
-        get: (key: string) => {
-          switch (key) {
-            case AWS_REGION:
-              return 'region-1';
-            case AWS_PARAM_STORE_PATH:
-              return '/foo';
-            case AWS_PARAM_STORE_CONTINUE_ON_ERROR:
-              return false;
-          }
-        },
-      } as any as ConfigService;
+      // now the provider injects the options token, not ConfigService
+      expect(prov.inject).toEqual([AWS_PARAM_STORE_OPTIONS]);
 
-      const result = await prov.useFactory(fakeConfigService);
+      const fakeOptions: ModuleOptions = {
+        awsRegion: 'region-1',
+        awsParamStorePath: '/foo',
+        awsParamStoreContinueOnError: false,
+      };
+      const result = await (prov.useFactory as any)(fakeOptions);
+
       expect(spy).toHaveBeenCalledWith('region-1', '/foo', false);
       expect(result).toEqual([{ Name: '/foo', Value: 'bar' }]);
       spy.mockRestore();

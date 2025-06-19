@@ -40,12 +40,11 @@ export class ParamStoreModule {
   public static forRootAsync(
     moduleAsyncOptions: ModuleAsyncOptions,
   ): DynamicModule {
+    const asyncProviders = this.createAsyncProviders(moduleAsyncOptions);
     return {
       module: ParamStoreModule,
-      providers: [
-        ParamStoreService,
-        ...this.createAsyncProviders(moduleAsyncOptions),
-      ],
+      imports: [moduleAsyncOptions.import, ScheduleModule.forRoot()],
+      providers: [ParamStoreService, ...asyncProviders],
       exports: [ParamStoreService],
     };
   }
@@ -55,22 +54,18 @@ export class ParamStoreModule {
     awsParamStorePath: string,
     continueOnError: boolean,
   ): Promise<Parameter[]> {
+    const parameters: Parameter[] = [];
     try {
       const ssmClient = new SSMClient({ region: awsRegion });
-      // return await fetchAllSSMParameters(ssmClient, awsParamStorePath);
-
-      const parameters: Parameter[] = [];
       const paginator = paginateGetParametersByPath(
         { client: ssmClient },
         { Path: awsParamStorePath, Recursive: true, WithDecryption: true },
       );
-
       for await (const page of paginator) {
         if (page.Parameters) {
           parameters.push(...page.Parameters);
         }
       }
-      return parameters;
     } catch (error) {
       if (continueOnError) {
         this.LOGGER.error('Failed to load AWS SSM parameters', error.message);
@@ -78,6 +73,7 @@ export class ParamStoreModule {
         throw error;
       }
     }
+    return parameters;
   }
 
   private static createProviders(options: ModuleOptions): Provider[] {
@@ -107,19 +103,26 @@ export class ParamStoreModule {
   ): Provider[] {
     return [
       {
-        provide: AWS_PARAM_STORE_PROVIDER,
-        useFactory: async (
-          configService: ConfigService,
-        ): Promise<Parameter[]> => {
-          return await ParamStoreModule.getSSMParameters(
-            configService.get(AWS_REGION),
-            configService.get(AWS_PARAM_STORE_PATH),
-            configService.get(AWS_PARAM_STORE_CONTINUE_ON_ERROR)
-              ? configService.get(AWS_PARAM_STORE_CONTINUE_ON_ERROR)
-              : false,
-          );
-        },
+        provide: AWS_PARAM_STORE_OPTIONS,
+        useFactory: (configService: ConfigService): ModuleOptions => ({
+          awsRegion: configService.get(AWS_REGION),
+          awsParamStorePath: configService.get(AWS_PARAM_STORE_PATH),
+          awsParamStoreContinueOnError: configService.get<boolean>(
+            AWS_PARAM_STORE_CONTINUE_ON_ERROR,
+            false,
+          ),
+        }),
         inject: [moduleAsyncOptions.useClass],
+      },
+      {
+        provide: AWS_PARAM_STORE_PROVIDER,
+        useFactory: (opts: ModuleOptions): Promise<Parameter[]> =>
+          ParamStoreModule.getSSMParameters(
+            opts.awsRegion,
+            opts.awsParamStorePath,
+            opts.awsParamStoreContinueOnError ?? false,
+          ),
+        inject: [AWS_PARAM_STORE_OPTIONS],
       },
     ];
   }
