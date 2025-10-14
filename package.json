@@ -1,6 +1,6 @@
 {
   "name": "param-store-service",
-  "version": "2.2.2",
+  "version": "3.0.0",
   "description": "DEPRECATED: Use @nestjs-aws/systems-manager instead. Service to read parameters from AWS Param Store.",
   "deprecated": "This package is no longer maintained. Please migrate to @nestjs-aws/systems-manager",
   "main": "dist/index.js",
