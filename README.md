@@ -1,4 +1,41 @@
-# NestJS AWS SSM Param Store service [![NPM](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml/badge.svg)](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml)
+# ⚠️ DEPRECATED - NestJS AWS SSM Param Store service
+
+> **This package has been deprecated and is no longer maintained.**
+>
+> **Please use [@nestjs-aws/systems-manager](https://www.npmjs.com/package/@nestjs-aws/systems-manager) instead.**
+
+[![NPM](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml/badge.svg)](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml)
+
+## Migration to @nestjs-aws/systems-manager
+
+This package has been completely rewritten and published under a new name: **@nestjs-aws/systems-manager**
+
+### Why the change?
+
+The new package provides:
+- Improved performance and reliability
+- Better TypeScript support
+- Updated dependencies and security patches
+- Enhanced features and functionality
+- Active maintenance and support
+
+### How to migrate
+
+1. Uninstall the old package:
+```bash
+npm uninstall param-store-service
+```
+
+2. Install the new package:
+```bash
+npm install @nestjs-aws/systems-manager
+```
+
+3. Update your imports and configuration according to the [@nestjs-aws/systems-manager documentation](https://www.npmjs.com/package/@nestjs-aws/systems-manager)
+
+---
+
+## Old Documentation (For Reference Only)
 
 Package to read parameters from AWS System Manager (SSM) parameter store.
 We can use "@nestjs/config" config service to read parameters from file and environment variables.
