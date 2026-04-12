@@ -6,6 +6,8 @@
 
 [![NPM](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml/badge.svg)](https://github.com/typical-organization/param-store-service/actions/workflows/main.yml)
 
+[NPM Link](https://www.npmjs.com/package/param-store-service)
+
 ## Migration to @nestjs-aws/systems-manager
 
 This package has been completely rewritten and published under a new name: **@nestjs-aws/systems-manager**
